@@ -1,4 +1,4 @@
-package com.neebalgurukul.dao;
+package com.neebalgurukul.exception;
 
 public class IdNotFoundException extends Exception {
     public IdNotFoundException(String message) {

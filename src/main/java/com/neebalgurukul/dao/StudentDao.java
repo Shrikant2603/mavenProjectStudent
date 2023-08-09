@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.neebalgurukul.exception.DuplicateEmailException;
+import com.neebalgurukul.exception.IdNotFoundException;
 import com.neebalgurukul.model.Student;
 
 public class StudentDao {
