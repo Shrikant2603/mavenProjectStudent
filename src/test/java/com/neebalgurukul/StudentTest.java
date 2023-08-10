@@ -1,6 +1,5 @@
 package com.neebalgurukul;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public class StudentTest {
 	try {
 	    // to read the table
 
-	    studentList = dao.getLoginDetails();
+	    studentList = dao.getStudentDetails();
 	    for (Student s : studentList) {
 		System.out.println(s);
 	    }

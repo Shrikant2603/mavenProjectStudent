@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DataSource {
     private Connection conn = null;
 
-    DataSource() {
+    public DataSource() {
 	try {
 	    Class.forName("com.mysql.cj.jdbc.Driver");
 	} catch (ClassNotFoundException e) {

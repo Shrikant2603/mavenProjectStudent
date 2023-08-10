@@ -6,6 +6,7 @@ public class Student {
     private String email;
     private String course;
     private int age;
+    private String username;
 
     public Student() {
     };
@@ -51,6 +52,14 @@ public class Student {
 
     public void setAge(int age) {
 	this.age = age;
+    }
+
+    public String getUsername() {
+	return username;
+    }
+
+    public void setUsername(String username) {
+	this.username = username;
     }
 
     @Override

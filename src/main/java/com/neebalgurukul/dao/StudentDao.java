@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.neebalgurukul.exception.DuplicateEmailException;
 import com.neebalgurukul.exception.IdNotFoundException;
 import com.neebalgurukul.model.Student;
 
@@ -18,7 +17,7 @@ public class StudentDao {
     ResultSet rs = null;
     DataSource ds = new DataSource();
 
-    public List<Student> getLoginDetails() throws SQLException {
+    public List<Student> getStudentDetails() throws SQLException {
 	String query = "Select * from students";
 	conn = ds.getConnection();
 	List<Student> StudentList = new ArrayList<>();
@@ -32,6 +31,7 @@ public class StudentDao {
 		    obj.setEmail(rs.getString("email"));
 		    obj.setCourse(rs.getString("course"));
 		    obj.setAge(rs.getInt("age"));
+		    obj.setUsername(rs.getString("username"));
 //		    System.out.println(obj.getUname() + ", " + obj.getPswd());
 		    StudentList.add(obj);
 		}
@@ -46,28 +46,47 @@ public class StudentDao {
 	}
     }
 
-    public boolean insertDetails(Student student) throws SQLException, DuplicateEmailException {
+    public boolean checkEmailExist(String email) {
+	boolean doesExist = false;
 	conn = ds.getConnection();
-	String query = "insert into students(name, email, course, age) values(?, ?, ?, ?)";
-	String checkQuery = "select count(*) from students where email = ?";
+	String query = "select * from where email = ?";
+
+	try {
+	    PreparedStatement pstmt = conn.prepareStatement(query);
+	    pstmt.setString(1, email);
+	    int i = pstmt.executeUpdate();
+	    if (i != 0) {
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next()) {
+		    doesExist = true;
+		}
+	    }
+
+	} catch (SQLException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+	return doesExist;
+    }
+
+    public boolean insertDetails(Student student, String username) throws SQLException {
+	conn = ds.getConnection();
+	String query = "insert into students(name, email, course, age, username) values(?, ?, ?, ?,?)";
 	int i = 0;
 	int studentId;
 	boolean studentCreated = false;
 	try {
-	    PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
-	    checkStmt.setString(1, student.getEmail());
-	    ResultSet checkResult = checkStmt.executeQuery();
-	    checkResult.next();
-	    int emailCount = checkResult.getInt(1);
 
-	    if (emailCount > 0) {
-		throw new DuplicateEmailException("Email already exists in the database");
+	    if (checkEmailExist(student.getEmail())) {
+		System.out.println("Email already exists in the database");
 	    } else {
 		PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		pstmt.setString(1, student.getName());
 		pstmt.setString(2, student.getEmail());
 		pstmt.setString(3, student.getCourse());
 		pstmt.setInt(4, student.getAge());
+		pstmt.setString(5, username);
 
 		i = pstmt.executeUpdate();
 		if (i != 0) {
@@ -125,6 +144,34 @@ public class StudentDao {
 	} finally {
 	    conn.close();
 	}
+    }
+
+    public boolean getUsernameDetails(String username) {
+	boolean flag = false;
+	String query = "select * from students where username = ?";
+	conn = ds.getConnection();
+
+	try {
+	    PreparedStatement pstmt = conn.prepareStatement(query);
+	    pstmt.setString(1, username);
+	    ResultSet rs = pstmt.executeQuery();
+
+	    if (rs.next()) {
+		flag = true;
+	    }
+
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	} finally {
+	    try {
+		conn.close();
+	    } catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	}
+
+	return flag;
     }
 
 }
